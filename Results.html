@@ -1,0 +1,131 @@
+<html>
+  <head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="https://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+	<script src="js/d3.v3.min.js" charset="utf-8"></script>
+	<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href="css/MasterStyles.css">
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script src="js/Logo_Builder.js" charset="utf-8"></script>
+	<script src="js/Get.js" charset="utf-8"></script>
+
+    <meta charset="utf-8">
+    <title>PSSM Scan Visualization</title>
+  </head>
+  <body>
+		<div id="body_container" align="center" style=" margin-top:1%">
+				<div id="motif_container" align="center" class="container">
+					<div id="top_template" class="top">
+						<h2>SequenceLogo representation of the PSSM motif.</h2>
+						<p style="color:#727272;"> Visual representation of PSMM motif logo from input</p>
+					</div>
+					<br>
+					</b>
+				</div>
+				
+				<div id="graph_container" align="center" class="container" height='900px'>
+					<div id="top_template" class="top">
+						<h2>Graph Goes Here</h2>
+
+					</div>
+				</div>
+        <div id="graph_container" align="center" class="container" height='900px'>
+            <h2>Supplementary information</h2>
+              <a href="./uploads/Max_scores.txt" download>Max score per sequence</a><br /> <br />
+              <a href="./uploads/logp.txt" download>-log pvalue</a>
+        </div>
+
+
+
+		</div><!-- of body conatiner -->
+	</body>
+</html>
+	<script type="text/javascript">
+	Get();
+    
+google.load('visualization', '1', {packages: ['corechart', 'bar']});
+    google.setOnLoadCallback(drawMultSeries);
+        //Get();
+
+function drawMultSeries() {
+      var data = new google.visualization.DataTable();
+      if(Scores[Scores.length-2]=='S')
+      {
+        var start=parseInt(Scores[Scores.length-1]);
+        var data = google.visualization.arrayToDataTable([
+        ["Position", "Confidence", { role: "style" } ],
+        [start,parseFloat(Scores[start-1]), "#3F51F5"]]);
+
+        for(i=start+1;i<Scores.length-1;i++){
+          data.addRow([i,parseFloat(Scores[i-1]),"#3F51F5"]);
+        }
+
+      }
+
+      if(Scores[Scores.length-2]=='E')
+      {
+        var start=Scores.length-1-parseInt(Scores[Scores.length-1]);
+        console.log(start)
+        var data = google.visualization.arrayToDataTable([
+        ["Position", "-log(p)", { role: "style" } ],
+        [start,parseFloat(Scores[start-1]), "#3F51F5"]]);
+
+         for(i=start+1;i<Scores.length-1;i++){
+          data.addRow([i,parseFloat(Scores[i-1]),"#3F51F5"]);
+        }
+ 
+      }
+                //data.addRow([2,Scores[1],"#3F51F5"]);
+
+
+           var view = new google.visualization.DataView(data);
+      view.setColumns([0, 1,
+                       { calc: "stringify",
+                         sourceColumn: 1,
+                         type: "string",
+                         role: "annotation" },
+                       2]);
+      var options = {
+        title: '-log p value for each position requested',
+        height: 400,
+        focusTarget: 'category',
+        hAxis: {
+          title: 'Position',
+          format: 'short',
+          textStyle: {
+            fontSize: 14,
+            color: '#053061',
+            bold: true,
+            italic: false
+          },
+          titleTextStyle: {
+            fontSize: 18,
+            color: '#053061',
+            bold: true,
+            italic: false
+          }
+        },
+        vAxis: {
+          title: '-log pvalue',
+          textStyle: {
+            fontSize: 18,
+            color: '#67001f',
+            bold: false,
+            italic: false
+          },
+          titleTextStyle: {
+            fontSize: 18,
+            color: '#67001f',
+            bold: true,
+            italic: false
+          }
+        }
+      };
+
+      var chart = new google.visualization.ColumnChart(
+        document.getElementById('graph_container'));
+
+      chart.draw(data, options);
+    }
+	</script>
